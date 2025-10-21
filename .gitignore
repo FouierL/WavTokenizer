@@ -1,9 +1,9 @@
 # Byte-compiled / optimized / DLL files
-__pycache__/
+__pycache__
 *.py[cod]
 *$py.class
-
-
+*.pyc
+__pycache__
 flash-attention
 tensorboard_logs
 # 忽略模型权重文件，但保留源代码
