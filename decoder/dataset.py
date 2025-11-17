@@ -67,7 +67,12 @@ class VocosDataset(Dataset):
             # print("有问题哈,数据处理部分")
             y = y.mean(dim=-1, keepdim=False)
         gain = np.random.uniform(-1, -6) if self.train else -3
-        y, _ = torchaudio.sox_effects.apply_effects_tensor(y, sr, [["norm", f"{gain:.2f}"]])
+        # 使用纯 PyTorch 实现音频归一化，避免依赖 sox
+        peak = y.abs().max()
+        if peak > 0:
+            # gain 是以 dB 为单位的，转换为线性比例
+            target_peak = 10 ** (gain / 20)
+            y = y * (target_peak / peak)
         if sr != self.sampling_rate:
             y = torchaudio.functional.resample(y, orig_freq=sr, new_freq=self.sampling_rate)
         if y.size(-1) < self.num_samples:
